@@ -70,19 +70,26 @@ function App() {
           const apkAsset = data.assets.find(asset => asset.name.endsWith('.apk'));
           if (apkAsset) {
             setDownloadUrl(apkAsset.browser_download_url);
-          } else {
+          } else if (data.html_url) {
             setDownloadUrl(data.html_url);
+          } else {
+            setDownloadUrl("https://github.com/sallu-developer/neon-music/releases/latest");
           }
+        } else {
+          setDownloadUrl("https://github.com/sallu-developer/neon-music/releases/latest");
         }
       })
-      .catch(err => console.error("Failed to fetch latest release:", err));
+      .catch(err => {
+        console.error("Failed to fetch latest release:", err);
+        setDownloadUrl("https://github.com/sallu-developer/neon-music/releases/latest");
+      });
   }, []);
 
   const handleDownload = () => {
     if (downloadUrl) {
       window.location.href = downloadUrl;
     } else {
-      alert("App is loading or latest APK hasn't been uploaded to GitHub Releases yet!");
+      window.location.href = "https://github.com/sallu-developer/neon-music/releases/latest";
     }
   };
 
