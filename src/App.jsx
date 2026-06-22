@@ -62,13 +62,11 @@ function App() {
   };
 
   const handleDownload = () => {
-    // Placeholder download logic.
-    // When the actual file is ready, replace 'placeholder.txt' with the file URL.
+    // APK file download logic
     const element = document.createElement("a");
-    const file = new Blob(["This is a placeholder file for Neon Music download."], {type: 'text/plain'});
-    element.href = URL.createObjectURL(file);
-    element.download = "NeonMusic_Download.txt";
-    document.body.appendChild(element); // Required for this to work in FireFox
+    element.href = "/neon-music.apk"; // Ensure your APK is named this and placed in the public folder
+    element.download = "NeonMusic.apk"; 
+    document.body.appendChild(element); 
     element.click();
     document.body.removeChild(element);
   };
