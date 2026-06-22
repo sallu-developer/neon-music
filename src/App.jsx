@@ -66,22 +66,33 @@ function App() {
     fetch('https://api.github.com/repos/sallu-developer/neon-music/releases/latest')
       .then(res => res.json())
       .then(data => {
+        let fetchedUrl = "https://github.com/sallu-developer/neon-music/releases/latest";
         if (data.assets && data.assets.length > 0) {
           const apkAsset = data.assets.find(asset => asset.name.endsWith('.apk'));
           if (apkAsset) {
-            setDownloadUrl(apkAsset.browser_download_url);
+            fetchedUrl = apkAsset.browser_download_url;
           } else if (data.html_url) {
-            setDownloadUrl(data.html_url);
-          } else {
-            setDownloadUrl("https://github.com/sallu-developer/neon-music/releases/latest");
+            fetchedUrl = data.html_url;
           }
-        } else {
-          setDownloadUrl("https://github.com/sallu-developer/neon-music/releases/latest");
+        }
+        
+        setDownloadUrl(fetchedUrl);
+
+        // Auto download if URL has ?download=auto
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('download') === 'auto') {
+          window.location.href = fetchedUrl;
         }
       })
       .catch(err => {
         console.error("Failed to fetch latest release:", err);
-        setDownloadUrl("https://github.com/sallu-developer/neon-music/releases/latest");
+        const fallbackUrl = "https://github.com/sallu-developer/neon-music/releases/latest";
+        setDownloadUrl(fallbackUrl);
+
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('download') === 'auto') {
+          window.location.href = fallbackUrl;
+        }
       });
   }, []);
 
