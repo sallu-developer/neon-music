@@ -51,6 +51,7 @@ function App() {
   const [feedbacks, setFeedbacks] = useState(initialFeedbacks);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [newReview, setNewReview] = useState({ name: '', text: '', rating: 5 });
+  const [downloadUrl, setDownloadUrl] = useState(null);
 
   const handleReviewSubmit = (e) => {
     e.preventDefault();
@@ -61,14 +62,28 @@ function App() {
     }
   };
 
+  useEffect(() => {
+    fetch('https://api.github.com/repos/sallu-developer/neon-music/releases/latest')
+      .then(res => res.json())
+      .then(data => {
+        if (data.assets && data.assets.length > 0) {
+          const apkAsset = data.assets.find(asset => asset.name.endsWith('.apk'));
+          if (apkAsset) {
+            setDownloadUrl(apkAsset.browser_download_url);
+          } else {
+            setDownloadUrl(data.html_url);
+          }
+        }
+      })
+      .catch(err => console.error("Failed to fetch latest release:", err));
+  }, []);
+
   const handleDownload = () => {
-    // APK file download logic
-    const element = document.createElement("a");
-    element.href = "/neon-music.apk"; // Ensure your APK is named this and placed in the public folder
-    element.download = "NeonMusic.apk"; 
-    document.body.appendChild(element); 
-    element.click();
-    document.body.removeChild(element);
+    if (downloadUrl) {
+      window.location.href = downloadUrl;
+    } else {
+      alert("App is loading or latest APK hasn't been uploaded to GitHub Releases yet!");
+    }
   };
 
   return (
